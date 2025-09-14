@@ -6,16 +6,10 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// --- START OF FIX ---
-// Configure CORS to allow requests specifically from your live frontend URL.
-const corsOptions = {
-  origin: 'https://developer-dashboard-11.onrender.com',
-  optionsSuccessStatus: 200 // for some legacy browsers
-};
-
-// Use the configured CORS options
-app.use(cors(corsOptions));
-// --- END OF FIX ---
+// --- START OF FINAL FIX ---
+// Use the default, more permissive CORS settings. This allows requests from any origin.
+app.use(cors());
+// --- END OF FINAL FIX ---
 
 
 // --- API ROUTES ---
