@@ -6,10 +6,27 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// --- START OF FINAL FIX ---
-// Use the default, more permissive CORS settings. This allows requests from any origin.
+// Use the default, more permissive CORS settings.
 app.use(cors());
-// --- END OF FINAL FIX ---
+
+// --- START OF DEBUG ROUTES ---
+
+// 1. Root Route (Health Check)
+// This helps us confirm if the server is running at all.
+app.get('/', (req, res) => {
+  res.send('Backend server is alive and running!');
+});
+
+// 2. Environment Variable Test Route
+// This helps us confirm if the secret keys are loaded correctly.
+app.get('/test-env', (req, res) => {
+  res.json({
+    githubTokenExists: !!process.env.GITHUB_TOKEN,
+    wakatimeKeyExists: !!process.env.WAKATIME_API_KEY,
+  });
+});
+
+// --- END OF DEBUG ROUTES ---
 
 
 // --- API ROUTES ---
@@ -19,6 +36,10 @@ app.get('/api/github/:username', async (req, res) => {
     try {
         const { username } = req.params;
         const token = process.env.GITHUB_TOKEN;
+        
+        if (!token) {
+          throw new Error("CRITICAL: GitHub token is not configured on the server.");
+        }
 
         const userResponse = await axios.get(`https://api.github.com/users/${username}`, {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -28,12 +49,7 @@ app.get('/api/github/:username', async (req, res) => {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
-        const data = {
-            user: userResponse.data,
-            repos: reposResponse.data
-        };
-
-        res.json(data);
+        res.json({ user: userResponse.data, repos: reposResponse.data });
 
     } catch (error) {
         console.error('Error fetching GitHub data:', error.message);
@@ -45,6 +61,11 @@ app.get('/api/github/:username', async (req, res) => {
 app.get('/api/wakatime/stats', async (req, res) => {
     try {
         const apiKey = process.env.WAKATIME_API_KEY;
+        
+        if (!apiKey) {
+          throw new Error("CRITICAL: WakaTime API key is not configured on the server.");
+        }
+
         const statsResponse = await axios.get('https://wakatime.com/api/v1/users/current/stats/last_7_days', {
             headers: { 'Authorization': `Basic ${Buffer.from(apiKey).toString('base64')}` }
         });
@@ -61,18 +82,14 @@ app.get('/api/wakatime/stats', async (req, res) => {
 app.get('/api/github/:username/contributions', async (req, res) => {
     try {
         const { username } = req.params;
-        
         const url = `https://github-contributions-api.jogruber.de/v4/${username}`;
         const response = await axios.get(url);
-        
         res.json(response.data);
-
     } catch (error) {
         console.error('Error fetching contribution data:', error.message);
         res.status(500).json({ message: 'Error fetching contribution data' });
     }
 });
-
 
 // Start the server
 app.listen(PORT, () => {
