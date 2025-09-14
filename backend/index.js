@@ -12,13 +12,11 @@ app.use(cors());
 // --- START OF DEBUG ROUTES ---
 
 // 1. Root Route (Health Check)
-// This helps us confirm if the server is running at all.
 app.get('/', (req, res) => {
   res.send('Backend server is alive and running!');
 });
 
 // 2. Environment Variable Test Route
-// This helps us confirm if the secret keys are loaded correctly.
 app.get('/test-env', (req, res) => {
   res.json({
     githubTokenExists: !!process.env.GITHUB_TOKEN,
@@ -30,6 +28,7 @@ app.get('/test-env', (req, res) => {
 
 
 // --- API ROUTES ---
+// ... (The rest of your API routes go here, they are unchanged) ...
 
 // 1. GitHub Profile and Repositories Route
 app.get('/api/github/:username', async (req, res) => {
@@ -90,6 +89,7 @@ app.get('/api/github/:username/contributions', async (req, res) => {
         res.status(500).json({ message: 'Error fetching contribution data' });
     }
 });
+
 
 // Start the server
 app.listen(PORT, () => {
