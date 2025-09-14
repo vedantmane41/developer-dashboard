@@ -14,9 +14,9 @@ function App() {
   useEffect(() => {
     // We can fetch both pieces of data at the same time
 Promise.all([
-  fetch(`http://localhost:4000/api/github/${GITHUB_USERNAME}`),
-  fetch('http://localhost:4000/api/wakatime/stats'),
-  fetch(`http://localhost:4000/api/github/${GITHUB_USERNAME}/contributions`) // <-- ADD THIS LINE
+  fetch(`https://developer-dashboard-7551.onrender.com/api/github/${GITHUB_USERNAME}`),
+  fetch('https://developer-dashboard-7551.onrender.com/api/wakatime/stats'),
+  fetch(`https://developer-dashboard-7551.onrender.com/api/github/${GITHUB_USERNAME}/contributions`) // <-- ADD THIS LINE
 ])
 .then(async ([githubRes, wakatimeRes, contribRes]) => { // <-- ADD contribRes
   // ... (existing code)
