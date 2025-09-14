@@ -6,8 +6,17 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 4000;
 
+// --- START OF FIX ---
+// Configure CORS to allow requests specifically from your live frontend URL.
+const corsOptions = {
+  origin: 'https://developer-dashboard-11.onrender.com',
+  optionsSuccessStatus: 200 // for some legacy browsers
+};
 
-app.use(cors());
+// Use the configured CORS options
+app.use(cors(corsOptions));
+// --- END OF FIX ---
+
 
 // --- API ROUTES ---
 
@@ -75,3 +84,4 @@ app.get('/api/github/:username/contributions', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
+
